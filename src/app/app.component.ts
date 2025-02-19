@@ -1,12 +1,22 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { SidebarComponent } from './layouts/sidebar/sidebar.component';
+import { ChatWindowComponent } from './layouts/chat-window/chat-window.component';
+import { CommonModule } from '@angular/common';
+import { RegulationSidebarComponent } from './layouts/regulation-sidebar/regulation-sidebar.component';
+
 
 @Component({
+  standalone: true,
   selector: 'app-root',
-  imports: [RouterOutlet],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrls: ['./app.component.scss'],
+  imports: [
+    CommonModule,         // so you can use *ngIf, *ngFor, etc.
+    SidebarComponent,
+    ChatWindowComponent,
+    RegulationSidebarComponent,
+  ]
 })
 export class AppComponent {
-  title = 'anything-llm-clone';
+  // Optionally put logic here
 }

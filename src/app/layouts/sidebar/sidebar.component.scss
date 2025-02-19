@@ -1,0 +1,101 @@
+.sidebar-container {
+    width: 250px;               // fixed width or whatever you prefer
+    height: 100vh;
+    min-height: 100%;
+    flex-shrink: 0;  // Prevent sidebar from shrinking
+    background-color: #f4f4f4;  // Light gray background
+    border-right: 2px solid #012169;  // Add BOA Navy border
+    color: #012169; // BOA Navy Blue
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 0.75rem;      // some smaller padding
+    overflow-y: auto;           // if the list of workspaces/threads grows large
+    position: relative; // added to ensure proper containment
+  }
+  
+  
+  .new-workspace-btn {
+    background-color: #ffffff;  // Change to white
+    border: 1px solid #012169;  // Change to BOA Navy
+    color: #012169; // BOA Navy Blue
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    border-radius: 4px;
+  
+    &:hover {
+      background-color: #e8e8e8;
+    }
+  }
+  
+  .workspace-list {
+    flex: 1;
+    overflow-y: auto;
+  }
+  
+  .workspace-item {
+    background-color: #ffffff;  // Change to white
+    border: 1px solid #012169;  // Change to BOA Navy
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    padding: 0.5rem;
+  }
+  
+  .workspace-item.active {
+    border: 2px solid #E31837; // BOA Red
+  }
+  
+  .workspace-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+  
+  .workspace-name {
+    font-weight: bold;
+  }
+  
+  .workspace-settings {
+    background: none;
+    background-image: url('/assets/delete.png'); ///Users/mrnobody/Downloads/Bhai/anything-llm-clone/src/assets/image.ico
+    background-size: contain;
+    border: none;
+    width: 24px;
+    height: 24px;
+    //color: #012169; // BOA Navy Blue
+    //font-size: 1rem;
+    cursor: pointer;
+  }
+  
+  .thread-list {
+    margin-left: 1rem;
+  }
+  
+  .thread-item {
+    padding: 0.25rem 0;
+    cursor: pointer;
+    color: #012169; // BOA Navy Blue
+  }
+  
+  .thread-item.active {
+    font-weight: bold;
+    text-decoration: underline;
+    color: #E31837; // BOA Red
+  }
+  
+  .add-thread-btn {
+    background: none;
+    border: none;
+    color: #012169; // BOA Navy Blue
+    cursor: pointer;
+    margin-top: 0.5rem;
+  
+    &:hover {
+      text-decoration: underline;
+      color: #E31837; // BOA Red
+    }
+  }
+  

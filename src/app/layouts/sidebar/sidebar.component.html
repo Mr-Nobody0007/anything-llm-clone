@@ -1,0 +1,36 @@
+<div class="sidebar-container">
+    <button class="new-workspace-btn" (click)="onCreateWorkspace()">
+      + New Workspace
+    </button>
+  
+    <div class="workspace-list">
+      <div
+        class="workspace-item"
+        *ngFor="let ws of workspaces"
+        [class.active]="ws.id === store.selectedWorkspaceId"
+      >
+        <div class="workspace-header" (click)="selectWorkspace(ws.id)">
+          <span class="workspace-name">{{ ws.name }}</span>
+          <button
+          class="workspace-settings"
+          (click)="deleteWorkspace(ws.id); $event.stopPropagation()"></button>
+        </div>
+  
+        <!-- Thread list within the workspace -->
+        <div class="thread-list" *ngIf="ws.id === store.selectedWorkspaceId">
+          <div
+            class="thread-item"
+            *ngFor="let th of ws.threads"
+            [class.active]="th.id === store.selectedThreadId"
+            (click)="selectThread(th.id, ws.id)"
+          >
+            {{ th.name }}
+          </div>
+          <button class="add-thread-btn" (click)="onCreateThread(ws.id)">
+            + New Thread
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  

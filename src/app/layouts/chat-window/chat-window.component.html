@@ -1,0 +1,67 @@
+<div class="chat-window">
+    <div class="chat-header">
+      <ng-container *ngIf="selectedWorkspace && selectedThread; else noSelection">
+        <h2>
+          Workspace: {{ selectedWorkspace.name }} >
+          Thread: {{ selectedThread.name }}
+        </h2>
+      </ng-container>
+      <ng-template #noSelection>
+        <h2>Please select a workspace & thread.</h2>
+      </ng-template>
+    </div>
+  
+
+    <div class="chat-messages" #messagesContainer>
+      <div
+        class="message"
+        *ngFor="let msg of messages"
+        [ngClass]="{'user': msg.role === 'user', 'ai': msg.role === 'assistant'}"
+      >
+        <div class="message-content">
+          <strong *ngIf="msg.role === 'assistant'">AI:</strong>
+          <strong *ngIf="msg.role === 'user'">You:</strong>
+          {{ msg.content }}
+          <small class="trace-id">(#{{ msg.traceId }})</small>
+        </div>
+        <div class="message-actions" *ngIf="msg.role === 'assistant'">
+          <button class="copy-btn" (click)="copyMessage(msg.content)">Copy</button>
+          <button class="thumbs-up-btn" (click)="thumbsUpMessage(msg.traceId)">👍</button>
+          <button class="thumbs-down-btn" (click)="thumbsDownMessage(msg.traceId)">👎</button>
+        </div>
+      </div>
+    </div>
+  
+    <div class="chat-input-container">
+      <div class="input-features">
+        <button class="upload-doc-btn"></button>
+        <button class="voice-input-btn" (click)="togglePromptMenu()">💡</button>
+
+        <div class="prompt-bubble" *ngIf="showPromptMenu" style="border: 2px solid red;">
+          <ul>
+            <li *ngFor="let prompt of predefinedPrompts" (click)="onPromptSelected(prompt)">
+              {{ prompt }}
+            </li>
+          </ul>
+        </div>
+      </div>
+  
+      <textarea
+        [(ngModel)]="userInput"
+        class="textarea"
+        placeholder="Send a message..."
+        rows="1"
+        [disabled]="!selectedWorkspace || !selectedThread"
+        (keydown)="onKeyPress($event)"
+      ></textarea>
+  
+      <button
+        class="send-btn"
+        [disabled]="!selectedWorkspace || !selectedThread"
+        (click)="onSendMessage()"
+      >
+        Send
+      </button>
+    </div>
+  </div>
+  
