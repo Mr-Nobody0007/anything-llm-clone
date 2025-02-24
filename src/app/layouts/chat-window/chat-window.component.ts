@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LlmStoreService } from '../../services/llm-store.service';
 import { Workspace, Thread, Message } from '../../models/llm.models';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   standalone: true,
@@ -15,9 +16,18 @@ import { Workspace, Thread, Message } from '../../models/llm.models';
 })
 export class ChatWindowComponent {
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
+  @ViewChild('fileInput') private fileInput!: ElementRef;
   userInput: string = '';
 
   showPromptMenu = false;
+  showUploadPopup: boolean = false;
+  searchQuery: string = '';
+  // This will hold the search results from the API.
+  // Each object contains title and document_number.
+  searchResults: Array<{ title: string; document_number: string }> = [];
+  // Selected context from search results.
+  selectedContext: { title: string; document_number: string } | null = null;
+  
 
   // Predefined prompts
   predefinedPrompts: string[] = [
@@ -29,7 +39,12 @@ export class ChatWindowComponent {
   ];
 
 
-  constructor(public store: LlmStoreService) {}
+  constructor(public store: LlmStoreService, private http: HttpClient) {}
+
+  ngOnInit(): void {
+    // Initialize the default workspace and thread on app startup.
+    this.store.initializeDefaultWorkspace();
+  }
 
   get selectedWorkspace(): Workspace | null {
     if (!this.store.selectedWorkspaceId) return null;
@@ -56,6 +71,8 @@ export class ChatWindowComponent {
     } catch(err) { }
   }
 
+  
+
   onKeyPress(event: KeyboardEvent) {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
@@ -63,6 +80,60 @@ export class ChatWindowComponent {
     }
   }
 
+  performSearch(): void {
+    if (!this.searchQuery.trim()) {
+      return;
+    }
+    const encodedQuery = encodeURIComponent(this.searchQuery.trim());
+    const apiUrl = `https://www.federalregister.gov/api/v1/documents.json?fields[]=document_number&fields[]=title&per_page=20&conditions[term]=${encodedQuery}`;
+    
+    this.http.get<any>(apiUrl).subscribe({
+      next: (response) => {
+        // Map the results array to our expected format.
+        if (response && response.results) {
+          this.searchResults = response.results.map((result: any) => ({
+            title: result.title,
+            document_number: result.document_number
+          }));
+        }
+      },
+      error: (err) => {
+        console.error('Search API error:', err);
+      }
+    });
+  }
+
+  selectSearchResult(result: { title: string; document_number: string }): void {
+    this.selectedContext = result;
+    this.showUploadPopup = false;
+  }
+   
+  triggerFileUpload(): void {
+    if (this.fileInput && this.fileInput.nativeElement) {
+      this.fileInput.nativeElement.click();
+    }
+  }
+
+  handleFileInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      // Set context with the file name only
+      this.selectedContext = { title: file.name , document_number: '123'};
+      // Optionally, you can clear the file input value so the same file can be reselected if needed.
+      input.value = '';
+    }
+  }
+
+  
+  toggleUploadPopup(): void {
+    this.showUploadPopup = !this.showUploadPopup;
+    // Reset search when opening the popup
+    if (this.showUploadPopup) {
+      this.searchQuery = '';
+      this.searchResults = [];
+    }
+  }
   onSendMessage() {
     if (!this.store.selectedWorkspaceId || !this.store.selectedThreadId) return;
     if (!this.userInput.trim()) return;

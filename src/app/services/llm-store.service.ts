@@ -21,7 +21,7 @@ export class LlmStoreService {
 
   constructor() {
     // Optionally seed an example workspace for testing:
-    const defaultWs = this.createWorkspace('AnythingLLM');
+    const defaultWs = this.createWorkspace('Default Workspace');
     this.createThread(defaultWs.id, 'default');
   }
 
@@ -35,10 +35,10 @@ export class LlmStoreService {
     return newWorkspace;
   }
 
-  createThread(workspaceId: string, threadName: string): Thread | undefined {
+  createThread(workspaceId: string, threadName: string): Thread {
     const workspace = this.workspaces.find((w) => w.id === workspaceId);
     if (!workspace) {
-      return undefined;
+      throw new Error('Workspace not found');
     }
     const newThread: Thread = {
       id: generateId('th'),
@@ -47,6 +47,36 @@ export class LlmStoreService {
     };
     workspace.threads.push(newThread);
     return newThread;
+  }
+
+  initializeDefaultWorkspace(): void {
+    // Check if any workspace exists; if not, create one.
+    if (this.workspaces.length === 0) {
+      const defaultWorkspace = this.createWorkspace('Default Workspace 2');
+      const defaultThread = this.createThread(defaultWorkspace.id, 'default');
+      this.setActiveWorkspaceThread(defaultWorkspace.id, defaultThread.id);
+      return;
+    }
+
+    // Look for a workspace named "default workspace 2" (case-insensitive)
+    let defaultWs = this.workspaces.find(ws => ws.name.toLowerCase() === 'default workspace 2');
+    if (!defaultWs) {
+      defaultWs = this.createWorkspace('default workspace 2');
+    }
+
+    // Look for a thread named "default" in that workspace
+    let defaultThread = defaultWs.threads.find(th => th.name.toLowerCase() === 'default');
+    if (!defaultThread) {
+      defaultThread = this.createThread(defaultWs.id, 'default');
+    }
+
+    // Set this workspace and thread as active
+    this.setActiveWorkspaceThread(defaultWs.id, defaultThread.id);
+  }
+
+  generateUniqueId(): string {
+    // A simple unique ID generator. Replace with your preferred method.
+    return Math.random().toString(36).substr(2, 9);
   }
 
   addMessage(workspaceId: string, threadId: string, content: string, role: 'user' | 'assistant'): Message | undefined {

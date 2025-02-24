@@ -1,67 +1,117 @@
 <div class="chat-window">
-    <div class="chat-header">
-      <ng-container *ngIf="selectedWorkspace && selectedThread; else noSelection">
-        <h2>
-          Workspace: {{ selectedWorkspace.name }} >
-          Thread: {{ selectedThread.name }}
-        </h2>
-      </ng-container>
-      <ng-template #noSelection>
-        <h2>Please select a workspace & thread.</h2>
-      </ng-template>
-    </div>
-  
+  <div class="chat-header">
+    <ng-container *ngIf="selectedWorkspace && selectedThread; else noSelection">
+      <h2>
+        Workspace: {{ selectedWorkspace.name }} >
+        Thread: {{ selectedThread.name }}
+      </h2>
+    </ng-container>
+    <ng-template #noSelection>
+      <h2>Please select a workspace & thread.</h2>
+    </ng-template>
+  </div>
 
-    <div class="chat-messages" #messagesContainer>
-      <div
-        class="message"
-        *ngFor="let msg of messages"
-        [ngClass]="{'user': msg.role === 'user', 'ai': msg.role === 'assistant'}"
-      >
-        <div class="message-content">
-          <strong *ngIf="msg.role === 'assistant'">AI:</strong>
-          <strong *ngIf="msg.role === 'user'">You:</strong>
-          {{ msg.content }}
-          <small class="trace-id">(#{{ msg.traceId }})</small>
-        </div>
-        <div class="message-actions" *ngIf="msg.role === 'assistant'">
-          <button class="copy-btn" (click)="copyMessage(msg.content)">Copy</button>
-          <button class="thumbs-up-btn" (click)="thumbsUpMessage(msg.traceId)">👍</button>
-          <button class="thumbs-down-btn" (click)="thumbsDownMessage(msg.traceId)">👎</button>
-        </div>
-      </div>
-    </div>
-  
-    <div class="chat-input-container">
-      <div class="input-features">
-        <button class="upload-doc-btn"></button>
-        <button class="voice-input-btn" (click)="togglePromptMenu()">💡</button>
 
-        <div class="prompt-bubble" *ngIf="showPromptMenu" style="border: 2px solid red;">
-          <ul>
-            <li *ngFor="let prompt of predefinedPrompts" (click)="onPromptSelected(prompt)">
-              {{ prompt }}
-            </li>
-          </ul>
-        </div>
+  <div class="chat-messages" #messagesContainer>
+    <div
+      class="message"
+      *ngFor="let msg of messages"
+      [ngClass]="{'user': msg.role === 'user', 'ai': msg.role === 'assistant'}"
+    >
+      <div class="message-content">
+        <strong *ngIf="msg.role === 'assistant'">AI:</strong>
+        <strong *ngIf="msg.role === 'user'">You:</strong>
+        {{ msg.content }}
+        <small class="trace-id" *ngIf="msg.role === 'user'">(#{{ msg.traceId }})</small>
       </div>
-  
-      <textarea
-        [(ngModel)]="userInput"
-        class="textarea"
-        placeholder="Send a message..."
-        rows="1"
-        [disabled]="!selectedWorkspace || !selectedThread"
-        (keydown)="onKeyPress($event)"
-      ></textarea>
-  
-      <button
-        class="send-btn"
-        [disabled]="!selectedWorkspace || !selectedThread"
-        (click)="onSendMessage()"
-      >
-        Send
-      </button>
+      <div class="message-actions" *ngIf="msg.role === 'assistant'">
+        <button class="copy-btn" (click)="copyMessage(msg.content)">Copy</button>
+        <button class="thumbs-up-btn" (click)="thumbsUpMessage(msg.traceId)">👍</button>
+        <button class="thumbs-down-btn" (click)="thumbsDownMessage(msg.traceId)">👎</button>
+      </div>
     </div>
   </div>
+
+  <div class="chat-input-container">
+    <div class="input-features">
+      <button class="upload-doc-btn" (click)="toggleUploadPopup()"></button>
+      <button class="file-upload-btn" (click)="triggerFileUpload()">📂</button>
   
+  <!-- Hidden file input -->
+  <input type="file" #fileInput style="display: none;" (change)="handleFileInput($event)" />
+      <button class="voice-input-btn" (click)="togglePromptMenu()">💡</button>
+
+      <div class="upload-popup-overlay" *ngIf="showUploadPopup">
+        <div class="upload-popup-modal">
+          <div class="popup-header">
+            <h2>Search Documents</h2>
+            <button class="close-btn" (click)="toggleUploadPopup()">×</button>
+          </div>
+          <div class="popup-content">
+            <input 
+              type="text" 
+              [(ngModel)]="searchQuery" 
+              placeholder="Type to search documents..." />
+            <button class="search-btn" (click)="performSearch()">Search</button>
+            <ul>
+              <li *ngFor="let result of searchResults" (click)="selectSearchResult(result)">
+                {{ result.title }} ({{ result.document_number }})
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+
+
+      <div class="upload-popup-overlay" *ngIf="showPromptMenu">
+        <div class="upload-popup-modal">
+          <div class="popup-header">
+            <h2>Select queries from below</h2>
+            <button class="close-btn" (click)="togglePromptMenu()">×</button>
+          </div>
+          <div class="popup-content">
+            
+            <ul>
+              <li *ngFor="let prompt of predefinedPrompts" (click)="onPromptSelected(prompt)">
+                {{ prompt }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- <div class="prompt-bubble" *ngIf="showPromptMenu" style="border: 2px solid red;">
+        <ul>
+          <li *ngFor="let prompt of predefinedPrompts" (click)="onPromptSelected(prompt)">
+            {{ prompt }}
+          </li>
+        </ul>
+      </div> -->
+    </div>
+
+    <textarea
+      [(ngModel)]="userInput"
+      class="textarea"
+      placeholder="Send a message..."
+      rows="1"
+      [disabled]="!selectedWorkspace || !selectedThread"
+      (keydown)="onKeyPress($event)"
+    ></textarea>
+
+    <button
+      class="send-btn"
+      [disabled]="!selectedWorkspace || !selectedThread"
+      (click)="onSendMessage()"
+    >
+      Send
+    </button>
+    <div class="pinned-context" *ngIf="selectedContext">
+      <span class="context-label">Context:</span>
+      <span class="context-title">{{ selectedContext.title.substring(0, 5) }}... ({{ selectedContext.document_number }})</span>
+      <!-- Optional: Add a remove button -->
+      <button class="remove-context" (click)="selectedContext = null">×</button>
+    </div>
+  </div>
+</div>

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { SidebarComponent } from './layouts/sidebar/sidebar.component';
 import { ChatWindowComponent } from './layouts/chat-window/chat-window.component';
 import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
 import { RegulationSidebarComponent } from './layouts/regulation-sidebar/regulation-sidebar.component';
 
 
@@ -15,6 +16,7 @@ import { RegulationSidebarComponent } from './layouts/regulation-sidebar/regulat
     SidebarComponent,
     ChatWindowComponent,
     RegulationSidebarComponent,
+    HttpClientModule
   ]
 })
 export class AppComponent {
