@@ -23,6 +23,8 @@ export class ChatWindowComponent {
   showUploadPopup: boolean = false;
   showPdfUrlPopup: boolean = false;
   pdfUrl: string = '';
+  isPdfUrlValid: boolean = false;
+  isValidatingUrl: boolean = false;
 
   searchQuery: string = '';
   // This will hold the search results from the API.
@@ -78,13 +80,55 @@ export class ChatWindowComponent {
     this.showPdfUrlPopup = !this.showPdfUrlPopup;
     if (this.showPdfUrlPopup) {
       this.pdfUrl = '';
+      this.isPdfUrlValid = false;
+      this.isValidatingUrl = false;
     }
   }
 
-  onSubmitPdfUrl(): void {
+  checkPdfUrl(): void {
+    // Reset validation state
+    this.isPdfUrlValid = false;
+    
     if (!this.pdfUrl.trim()) {
       return;
     }
+    
+    this.isValidatingUrl = true;
+    
+    // Less strict validation - primarily check if it ends with .pdf
+    const isPdfExtension = this.pdfUrl.toLowerCase().endsWith('.pdf');
+    
+    // Special case for government domains - less strict validation
+    const isGovDomain = this.pdfUrl.includes('.gov') || this.pdfUrl.includes('.mil');
+    
+    // Consider it valid if it has a PDF extension, especially for government domains
+    this.isPdfUrlValid = isPdfExtension;
+    this.isValidatingUrl = false;
+  }
+
+  downloadPdf(): void {
+    if (!this.pdfUrl.trim() || !this.isPdfUrlValid) {
+      return;
+    }
+    
+    // Create a hidden anchor element to trigger the download
+    const link = document.createElement('a');
+    link.href = this.pdfUrl;
+    link.download = this.pdfUrl.split('/').pop() || 'document.pdf';
+    link.target = '_blank'; // This helps with CORS issues for certain browsers
+    link.rel = 'noopener noreferrer'; // Security best practice
+    
+    // Append to body, click, and remove
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  onSubmitPdfUrl(): void {
+    if (!this.pdfUrl.trim() || !this.isPdfUrlValid) {
+      return;
+    }
+    
     const segments = this.pdfUrl.trim().split('/');
     const filename = segments.pop() || ''; // Get the last segment (e.g. "x.pdf")
     // Set the context locally since store doesn't have selectedContext
@@ -209,22 +253,4 @@ export class ChatWindowComponent {
     console.log(`Thumbs down for message ${traceId}`);
     // TODO: Implement additional logic like updating ratings or informing the backend.
   }
-
-
-  // onSendMessage() {
-  //   // Guard: make sure there's a selected workspace/thread
-  //   if (!this.store.selectedWorkspaceId || !this.store.selectedThreadId) return;
-  //   // Guard: skip empty input
-  //   if (!this.userInput.trim()) return;
-
-  //   // Add user message
-  //   this.store.addMessage(this.store.selectedWorkspaceId, this.store.selectedThreadId, this.userInput, 'user');
-
-  //   // (Optional) Immediately add a mock AI reply
-  //   // Real app might call an API to get actual LLM response
-  //   this.store.addMessage(this.store.selectedWorkspaceId, this.store.selectedThreadId, 'This is a mock AI response.', 'assistant');
-
-  //   // Clear the text area
-  //   this.userInput = '';
-  // }
 }

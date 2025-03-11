@@ -111,21 +111,43 @@
       </div>
 
       <!-- Full-screen modal popup for PDF URL input -->
-  <div class="pdf-url-popup-overlay" *ngIf="showPdfUrlPopup">
-    <div class="pdf-url-popup-modal">
-      <div class="popup-header">
-        <h2>Add PDF URL</h2>
-        <button class="close-btn" (click)="togglePdfUrlPopup()">×</button>
+      
+
+      <!-- PDF URL Popup -->
+<div class="pdf-url-popup-overlay" *ngIf="showPdfUrlPopup">
+  <div class="pdf-url-popup-modal">
+    <div class="popup-header">
+      <h2>Add PDF URL</h2>
+      <button class="close-btn" (click)="togglePdfUrlPopup()">×</button>
+    </div>
+    <div class="popup-content">
+      <input 
+        type="text" 
+        [(ngModel)]="pdfUrl" 
+        placeholder="Enter PDF URL (e.g., https://example.gov/document.pdf)" 
+        (input)="checkPdfUrl()" />
+      
+      <div class="url-validation-feedback" *ngIf="pdfUrl.trim().length > 0">
+        <div *ngIf="isValidatingUrl" class="validating-message">Validating URL...</div>
+        <div *ngIf="!isValidatingUrl && isPdfUrlValid" class="valid-url-message">✓ Valid PDF URL</div>
+        <div *ngIf="!isValidatingUrl && !isPdfUrlValid && pdfUrl.trim().length > 0" class="invalid-url-message">✗ Invalid or inaccessible PDF URL</div>
       </div>
-      <div class="popup-content">
-        <input 
-          type="text" 
-          [(ngModel)]="pdfUrl" 
-          placeholder="Enter PDF URL" />
-        <button class="submit-btn" (click)="onSubmitPdfUrl()">Add Context</button>
+      
+      <div class="button-group">
+        <button 
+          class="submit-btn" 
+          [disabled]="!isPdfUrlValid" 
+          (click)="onSubmitPdfUrl()">Add Context</button>
+        <button 
+          class="download-btn" 
+          [disabled]="!isPdfUrlValid" 
+          (click)="downloadPdf()">
+          <span class="download-icon">↓</span> Download PDF
+        </button>
       </div>
     </div>
   </div>
+</div>
 
       <!-- <div class="prompt-bubble" *ngIf="showPromptMenu" style="border: 2px solid red;">
         <ul>

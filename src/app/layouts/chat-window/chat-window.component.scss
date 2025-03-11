@@ -161,6 +161,112 @@ cursor: pointer;
 white-space: nowrap;
 }
 
+// Add these styles to chat-window.component.scss
+
+/* Existing PDF URL popup styles */
+.pdf-url-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Dark translucent overlay */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+/* Centered modal box */
+.pdf-url-popup-modal {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 8px 16px rgba(0, 123, 255, 0.4);
+  width: 80%;
+  max-width: 600px;
+}
+
+/* New styles for the PDF validation and buttons */
+.pdf-url-popup-modal .popup-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.url-validation-feedback {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  
+  .validating-message {
+    color: #777;
+    font-style: italic;
+  }
+  
+  .valid-url-message {
+    color: #28a745;
+    font-weight: bold;
+  }
+  
+  .invalid-url-message {
+    color: #dc3545;
+    font-weight: bold;
+  }
+}
+
+.button-group {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.download-btn {
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  
+  &:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.65;
+  }
+  
+  &:hover:not(:disabled) {
+    background-color: #218838;
+  }
+  
+  .download-icon {
+    font-size: 1.2rem;
+  }
+}
+
+/* Style for the submit button as well to match the design */
+.submit-btn {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  
+  &:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.65;
+  }
+  
+  &:hover:not(:disabled) {
+    background-color: #0069d9;
+  }
+}
 .popup-content ul li:hover {
 background-color: #f0f8ff;
 }
