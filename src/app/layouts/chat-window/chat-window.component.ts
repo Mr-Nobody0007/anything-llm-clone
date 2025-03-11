@@ -21,6 +21,9 @@ export class ChatWindowComponent {
 
   showPromptMenu = false;
   showUploadPopup: boolean = false;
+  showPdfUrlPopup: boolean = false;
+  pdfUrl: string = '';
+
   searchQuery: string = '';
   // This will hold the search results from the API.
   // Each object contains title and document_number.
@@ -71,7 +74,23 @@ export class ChatWindowComponent {
     } catch(err) { }
   }
 
-  
+  togglePdfUrlPopup(): void {
+    this.showPdfUrlPopup = !this.showPdfUrlPopup;
+    if (this.showPdfUrlPopup) {
+      this.pdfUrl = '';
+    }
+  }
+
+  onSubmitPdfUrl(): void {
+    if (!this.pdfUrl.trim()) {
+      return;
+    }
+    const segments = this.pdfUrl.trim().split('/');
+    const filename = segments.pop() || ''; // Get the last segment (e.g. "x.pdf")
+    // Set the context locally since store doesn't have selectedContext
+    this.selectedContext = { title: filename, document_number: filename };
+    this.showPdfUrlPopup = false;
+  }
 
   onKeyPress(event: KeyboardEvent) {
     if (event.key === 'Enter' && !event.shiftKey) {

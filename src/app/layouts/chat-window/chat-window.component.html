@@ -32,14 +32,43 @@
     </div>
   </div>
 
+  <div class="chat-input-wrapper">
   <div class="chat-input-container">
-    <div class="input-features">
-      <button class="upload-doc-btn" (click)="toggleUploadPopup()"></button>
-      <button class="file-upload-btn" (click)="triggerFileUpload()">📂</button>
-  
+    <div class="input-row">
+      <div class="input-features">
+        <button class="upload-doc-btn" (click)="toggleUploadPopup()"></button>
+        <button class="file-upload-btn" (click)="triggerFileUpload()">📂</button>
+        <button class="pdf-url-btn" (click)="togglePdfUrlPopup()">🔗</button>
+        <button class="voice-input-btn" (click)="togglePromptMenu()">💡</button>
+      </div>
+      
+      <textarea
+        [(ngModel)]="userInput"
+        class="textarea"
+        placeholder="Send a message..."
+        rows="1"
+        [disabled]="!selectedWorkspace || !selectedThread"
+        (keydown)="onKeyPress($event)"
+      ></textarea>
+      <button
+        class="send-btn"
+        [disabled]="!selectedWorkspace || !selectedThread"
+        (click)="onSendMessage()"
+      >
+        Send
+      </button>
+    </div>
+
+    <div class="pinned-context" *ngIf="selectedContext">
+      <span class="context-label">Document:</span>
+      <span class="context-title">{{ selectedContext.title }}... ({{ selectedContext.document_number }})</span>
+      <button class="remove-context" (click)="selectedContext = null">×</button>
+    </div>
+  </div>
+
   <!-- Hidden file input -->
   <input type="file" #fileInput style="display: none;" (change)="handleFileInput($event)" />
-      <button class="voice-input-btn" (click)="togglePromptMenu()">💡</button>
+      
 
       <div class="upload-popup-overlay" *ngIf="showUploadPopup">
         <div class="upload-popup-modal">
@@ -81,6 +110,22 @@
         </div>
       </div>
 
+      <!-- Full-screen modal popup for PDF URL input -->
+  <div class="pdf-url-popup-overlay" *ngIf="showPdfUrlPopup">
+    <div class="pdf-url-popup-modal">
+      <div class="popup-header">
+        <h2>Add PDF URL</h2>
+        <button class="close-btn" (click)="togglePdfUrlPopup()">×</button>
+      </div>
+      <div class="popup-content">
+        <input 
+          type="text" 
+          [(ngModel)]="pdfUrl" 
+          placeholder="Enter PDF URL" />
+        <button class="submit-btn" (click)="onSubmitPdfUrl()">Add Context</button>
+      </div>
+    </div>
+  </div>
 
       <!-- <div class="prompt-bubble" *ngIf="showPromptMenu" style="border: 2px solid red;">
         <ul>
@@ -89,29 +134,11 @@
           </li>
         </ul>
       </div> -->
-    </div>
+    
 
-    <textarea
-      [(ngModel)]="userInput"
-      class="textarea"
-      placeholder="Send a message..."
-      rows="1"
-      [disabled]="!selectedWorkspace || !selectedThread"
-      (keydown)="onKeyPress($event)"
-    ></textarea>
+    
 
-    <button
-      class="send-btn"
-      [disabled]="!selectedWorkspace || !selectedThread"
-      (click)="onSendMessage()"
-    >
-      Send
-    </button>
-    <div class="pinned-context" *ngIf="selectedContext">
-      <span class="context-label">Context:</span>
-      <span class="context-title">{{ selectedContext.title.substring(0, 5) }}... ({{ selectedContext.document_number }})</span>
-      <!-- Optional: Add a remove button -->
-      <button class="remove-context" (click)="selectedContext = null">×</button>
-    </div>
+    
+    
   </div>
 </div>
