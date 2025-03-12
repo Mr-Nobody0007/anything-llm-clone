@@ -1,0 +1,38 @@
+<div class="search-container">
+    <div class="search-header">
+        <h2>Semantic Search</h2>
+    </div>
+    
+    <div class="search-inputs">
+        <mat-form-field class="large-search-bar" appearance="outline">
+            <mat-label>Search Query</mat-label>
+            <input matInput [(ngModel)]="searchQuery" placeholder="Enter your search query" />
+        </mat-form-field>
+        
+        <mat-form-field class="small-match-score" appearance="outline">
+            <mat-label>Minimum Match Score (%)</mat-label>
+            <input matInput type="number" [(ngModel)]="minMatchScore" placeholder="0-100" min="0" max="100" />
+        </mat-form-field>
+        
+        <button mat-icon-button class="search-button" (click)="performSearch()" aria-label="Search">
+            <mat-icon>search</mat-icon>
+        </button>
+    </div>
+
+    <div class="results-section" *ngIf="searchResults.length > 0">
+        <mat-card class="result-card">
+            <div class="scrollable-results">
+                <mat-list>
+                    <mat-list-item *ngFor="let result of searchResults">
+                        <p matLine class="description-preview" [matTooltip]="result.description">{{ result.description | slice:0:100 }} ...</p>
+                        <p matLine><strong>Match Score:</strong> {{ result.matchScore }}%</p>
+                    </mat-list-item>
+                </mat-list>
+            </div>
+        </mat-card>
+    </div>
+    
+    <div class="no-results" *ngIf="searchResults.length === 0 && searchQuery">
+        <p>No results found matching your criteria.</p>
+    </div>
+</div>

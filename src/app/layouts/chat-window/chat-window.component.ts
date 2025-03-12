@@ -111,17 +111,34 @@ export class ChatWindowComponent {
       return;
     }
     
-    // Create a hidden anchor element to trigger the download
-    const link = document.createElement('a');
-    link.href = this.pdfUrl;
-    link.download = this.pdfUrl.split('/').pop() || 'document.pdf';
-    link.target = '_blank'; // This helps with CORS issues for certain browsers
-    link.rel = 'noopener noreferrer'; // Security best practice
-    
-    // Append to body, click, and remove
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Option 1: Use the Fetch API to get the file as a blob
+    fetch(this.pdfUrl)
+      .then(response => response.blob())
+      .then(blob => {
+        // Create a blob URL for the file
+        const blobUrl = URL.createObjectURL(blob);
+        
+        // Create a link element and trigger download
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = this.pdfUrl.split('/').pop() || 'document.pdf';
+        
+        // Append to body, click, and clean up
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Release the blob URL
+        setTimeout(() => {
+          URL.revokeObjectURL(blobUrl);
+        }, 100);
+      })
+      .catch(error => {
+        console.error('Error downloading PDF:', error);
+        
+        // Fallback method if fetch fails - might open in browser tab
+        window.open(this.pdfUrl, '_blank');
+      });
   }
 
   onSubmitPdfUrl(): void {
