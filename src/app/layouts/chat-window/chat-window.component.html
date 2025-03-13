@@ -2,7 +2,12 @@
   <div class="chat-header">
     <ng-container *ngIf="selectedWorkspace && selectedThread; else noSelection">
       <h2>
-        Workspace: {{ selectedWorkspace.name }} >
+        Workspace: {{ selectedWorkspace.name }}
+        <span *ngIf="selectedWorkspace.document" 
+              class="document-icon" 
+              [title]="selectedWorkspace.document.title + ' (' + selectedWorkspace.document.document_number + ')'">
+          <img [src]="selectedWorkspace.document.sourceIcon" alt="Document" width="20" height="20">
+        </span> >
         Thread: {{ selectedThread.name }}
       </h2>
     </ng-container>
@@ -60,7 +65,7 @@
     </div>
 
     <div class="pinned-context" *ngIf="selectedContext">
-      <span class="context-label">Document:</span>
+      <img [src]="selectedContext.sourceIcon" alt="Document" class="context-icon" width="20" height="20">
       <span class="context-title">{{ selectedContext.title }}... ({{ selectedContext.document_number }})</span>
       <button class="remove-context" (click)="selectedContext = null">×</button>
     </div>

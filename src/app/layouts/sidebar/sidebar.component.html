@@ -9,12 +9,20 @@
         *ngFor="let ws of workspaces"
         [class.active]="ws.id === store.selectedWorkspaceId"
       >
-        <div class="workspace-header" (click)="selectWorkspace(ws.id)">
-          <span class="workspace-name">{{ ws.name }} ({{ ws.id }})</span>
-          <button
-          class="workspace-settings"
-          (click)="deleteWorkspace(ws.id); $event.stopPropagation()"></button>
+      <div class="workspace-header" (click)="selectWorkspace(ws.id)">
+        <div class="workspace-title">
+          <span class="workspace-name">{{ ws.name }}</span>
+          <img *ngIf="ws.document" 
+               [src]="ws.document.sourceIcon" 
+               alt="Document" 
+               class="workspace-doc-icon"
+               [title]="ws.document.title + ' (' + ws.document.document_number + ')'">
         </div>
+        <button
+          class="workspace-settings"
+          (click)="deleteWorkspace(ws.id); $event.stopPropagation()">
+        </button>
+      </div>
   
         <!-- Thread list within the workspace -->
         <div class="thread-list" *ngIf="ws.id === store.selectedWorkspaceId">

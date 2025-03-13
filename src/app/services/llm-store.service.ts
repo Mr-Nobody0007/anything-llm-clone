@@ -79,6 +79,23 @@ export class LlmStoreService {
     return Math.random().toString(36).substr(2, 9);
   }
 
+  // Add a document to a workspace
+  attachDocumentToWorkspace(
+    workspaceId: string, 
+    title: string, 
+    document_number: string,
+    sourceIcon: string
+  ): void {
+    const workspace = this.workspaces.find((w) => w.id === workspaceId);
+    if (!workspace) return;
+
+    workspace.document = {
+      title,
+      document_number,
+      sourceIcon
+    };
+  }
+
   addMessage(workspaceId: string, threadId: string, content: string, role: 'user' | 'assistant'): Message | undefined {
     const workspace = this.workspaces.find((w) => w.id === workspaceId);
     if (!workspace) return undefined;

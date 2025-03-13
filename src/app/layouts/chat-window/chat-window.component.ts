@@ -31,7 +31,7 @@ export class ChatWindowComponent {
   // Each object contains title and document_number.
   searchResults: Array<{ title: string; document_number: string }> = [];
   // Selected context from search results.
-  selectedContext: { title: string; document_number: string } | null = null;
+  selectedContext: { title: string; document_number: string, sourceIcon: string } | null = null;
   
 
   // Predefined prompts
@@ -148,8 +148,12 @@ export class ChatWindowComponent {
     
     const segments = this.pdfUrl.trim().split('/');
     const filename = segments.pop() || ''; // Get the last segment (e.g. "x.pdf")
-    // Set the context locally since store doesn't have selectedContext
-    this.selectedContext = { title: filename, document_number: filename };
+    // Set the context locally with PDF icon source
+    this.selectedContext = { 
+      title: filename, 
+      document_number: filename,
+      sourceIcon: 'assets/pdf-link.ico'
+    };
     this.showPdfUrlPopup = false;
   }
 
@@ -184,7 +188,10 @@ export class ChatWindowComponent {
   }
 
   selectSearchResult(result: { title: string; document_number: string }): void {
-    this.selectedContext = result;
+    this.selectedContext = {
+      ...result,
+      sourceIcon: 'assets/upload.ico'
+    };
     this.showUploadPopup = false;
   }
    
@@ -198,8 +205,12 @@ export class ChatWindowComponent {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
-      // Set context with the file name only
-      this.selectedContext = { title: file.name , document_number: '123'};
+      // Set context with the file name and file icon
+      this.selectedContext = { 
+        title: file.name, 
+        document_number: '123',
+        sourceIcon: 'assets/file-upload.ico'
+      };
       // Optionally, you can clear the file input value so the same file can be reselected if needed.
       input.value = '';
     }
@@ -217,6 +228,17 @@ export class ChatWindowComponent {
   onSendMessage() {
     if (!this.store.selectedWorkspaceId || !this.store.selectedThreadId) return;
     if (!this.userInput.trim()) return;
+
+    // If there's a selected context, update the workspace with document info
+    if (this.selectedContext) {
+      // Update the workspace with the document info
+      this.store.attachDocumentToWorkspace(
+        this.store.selectedWorkspaceId, 
+        this.selectedContext.title,
+        this.selectedContext.document_number,
+        this.selectedContext.sourceIcon
+      );
+    }
 
     this.store.addMessage(
       this.store.selectedWorkspaceId,

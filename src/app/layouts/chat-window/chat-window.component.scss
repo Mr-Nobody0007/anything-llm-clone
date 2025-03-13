@@ -27,57 +27,6 @@
   }
 }
 
-// .upload-popup {
-//   position: absolute;
-//   top: -220px;  // Adjust so it appears above the input (or to the side)
-//   right: 0;
-//   background-color: #fff;
-//   border: 1px solid #007bff;
-//   box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
-//   border-radius: 8px;
-//   padding: 1rem;
-//   z-index: 1000;
-//   min-width: 250px;
-
-//   .popup-content {
-//     display: flex;
-//     flex-direction: column;
-//     gap: 0.5rem;
-
-//     input[type="text"] {
-//       padding: 0.5rem;
-//       border: 1px solid #ccc;
-//       border-radius: 4px;
-//     }
-
-//     button {
-//       align-self: flex-end;
-//       padding: 0.5rem 1rem;
-//       background-color: #007bff;
-//       color: #fff;
-//       border: none;
-//       border-radius: 4px;
-//       cursor: pointer;
-//     }
-
-//     ul {
-//       list-style: none;
-//       margin: 0;
-//       padding: 0;
-//       max-height: 150px;
-//       overflow-y: auto;
-
-//       li {
-//         padding: 0.5rem;
-//         cursor: pointer;
-//         &:hover {
-//           background-color: #f0f8ff;
-//         }
-//       }
-//     }
-//   }
-// }
-
 .upload-popup-overlay {
   position: fixed;
   top: 0;
@@ -301,8 +250,15 @@ background-color: #f0f8ff;
   align-items: center;
   gap: 0.5rem;
 
-  .context-label {
-    font-weight: bold;
+  .context-icon {
+    flex-shrink: 0;
+  }
+
+  .context-title {
+    flex-grow: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .remove-context {
@@ -318,6 +274,18 @@ background-color: #f0f8ff;
 .chat-header {
   padding: 1rem;
   border-bottom: 1px solid #e8e8e8;  // Lighter border
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .document-icon {
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+    }
+  }
 }
 
 .chat-input-wrapper {
@@ -512,30 +480,6 @@ background-color: #f0f8ff;
     color: var(--white);
   }
 }
-
-// .prompt-menu {
-//     position: relative;
-//     top: 2.5rem; /* Adjust so it sits below the mic button */
-//     left: 0;     /* Adjust left offset as needed */
-//     background-color: #fff;
-//     border: 1px solid var(--gray-200);
-//     border-radius: 4px;
-//     list-style: none;
-//     margin: 0;
-//     padding: 0.5rem 0;
-//     z-index: 1000;
-
-//     li {
-//       padding: 0.5rem 1rem;
-//       cursor: pointer;
-//       white-space: nowrap;
-
-//       &:hover {
-//         background-color: var(--gray-100);
-//       }
-//     }
-//   }
-
 
 .prompt-bubble {
   position: absolute;
