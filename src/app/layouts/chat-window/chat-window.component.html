@@ -41,9 +41,9 @@
   <div class="chat-input-container">
     <div class="input-row">
       <div class="input-features">
-        <button class="upload-doc-btn" (click)="toggleUploadPopup()"></button>
-        <button class="file-upload-btn" (click)="triggerFileUpload()">📂</button>
-        <button class="pdf-url-btn" (click)="togglePdfUrlPopup()">🔗</button>
+        <button class="upload-doc-btn" [disabled]="contextIsFixed" (click)="toggleUploadPopup()"></button>
+        <button class="file-upload-btn" [disabled]="contextIsFixed" (click)="triggerFileUpload()">📂</button>
+        <button class="pdf-url-btn" [disabled]="contextIsFixed" (click)="togglePdfUrlPopup()">🔗</button>
         <button class="voice-input-btn" (click)="togglePromptMenu()">💡</button>
       </div>
       
@@ -64,7 +64,7 @@
       </button>
     </div>
 
-    <div class="pinned-context" *ngIf="selectedContext">
+    <div class="pinned-context" *ngIf="selectedContext && !contextIsFixed">
       <img [src]="selectedContext.sourceIcon" alt="Document" class="context-icon" width="20" height="20">
       <span class="context-title">{{ selectedContext.title }}... ({{ selectedContext.document_number }})</span>
       <button class="remove-context" (click)="selectedContext = null">×</button>
@@ -115,9 +115,6 @@
         </div>
       </div>
 
-      <!-- Full-screen modal popup for PDF URL input -->
-      
-
       <!-- PDF URL Popup -->
 <div class="pdf-url-popup-overlay" *ngIf="showPdfUrlPopup">
   <div class="pdf-url-popup-modal">
@@ -152,20 +149,6 @@
       </div>
     </div>
   </div>
-</div>
-
-      <!-- <div class="prompt-bubble" *ngIf="showPromptMenu" style="border: 2px solid red;">
-        <ul>
-          <li *ngFor="let prompt of predefinedPrompts" (click)="onPromptSelected(prompt)">
-            {{ prompt }}
-          </li>
-        </ul>
-      </div> -->
-    
-
-    
-
-    
-    
+</div>    
   </div>
 </div>

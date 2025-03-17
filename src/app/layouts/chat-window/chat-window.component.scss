@@ -11,6 +11,15 @@
   position: relative;
 }
 
+.pdf-url-btn, .upload-doc-btn {
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: #ccc;
+    color: #888;
+  }
+}
+
 .file-upload-btn {
   border: 1px solid var(--primary-blue);
   background-color: var(--white);
@@ -21,9 +30,16 @@
   border-radius: 8px;
   transition: background-color 0.2s, color 0.2s;
   
-  &:hover {
+  &:hover:not(:disabled) {
     background-color: var(--primary-blue);
     color: var(--white);
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: #ccc;
+    color: #888;
   }
 }
 

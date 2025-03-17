@@ -33,6 +33,8 @@ export class ChatWindowComponent {
   // Selected context from search results.
   selectedContext: { title: string; document_number: string, sourceIcon: string } | null = null;
   
+  // Track if context has been fixed for the current workspace
+  contextIsFixed: boolean = false;
 
   // Predefined prompts
   predefinedPrompts: string[] = [
@@ -53,7 +55,16 @@ export class ChatWindowComponent {
 
   get selectedWorkspace(): Workspace | null {
     if (!this.store.selectedWorkspaceId) return null;
-    return this.store.workspaces.find(w => w.id === this.store.selectedWorkspaceId) || null;
+    const workspace = this.store.workspaces.find(w => w.id === this.store.selectedWorkspaceId) || null;
+    
+    // Check if this workspace already has a document attached
+    if (workspace && workspace.document) {
+      this.contextIsFixed = true;
+    } else {
+      this.contextIsFixed = false;
+    }
+    
+    return workspace;
   }
 
   get selectedThread(): Thread | null {
@@ -77,6 +88,9 @@ export class ChatWindowComponent {
   }
 
   togglePdfUrlPopup(): void {
+    // Only allow toggling if context is not fixed
+    if (this.contextIsFixed) return;
+    
     this.showPdfUrlPopup = !this.showPdfUrlPopup;
     if (this.showPdfUrlPopup) {
       this.pdfUrl = '';
@@ -142,7 +156,7 @@ export class ChatWindowComponent {
   }
 
   onSubmitPdfUrl(): void {
-    if (!this.pdfUrl.trim() || !this.isPdfUrlValid) {
+    if (!this.pdfUrl.trim() || !this.isPdfUrlValid || this.contextIsFixed) {
       return;
     }
     
@@ -165,7 +179,7 @@ export class ChatWindowComponent {
   }
 
   performSearch(): void {
-    if (!this.searchQuery.trim()) {
+    if (!this.searchQuery.trim() || this.contextIsFixed) {
       return;
     }
     const encodedQuery = encodeURIComponent(this.searchQuery.trim());
@@ -188,6 +202,8 @@ export class ChatWindowComponent {
   }
 
   selectSearchResult(result: { title: string; document_number: string }): void {
+    if (this.contextIsFixed) return;
+    
     this.selectedContext = {
       ...result,
       sourceIcon: 'assets/upload.ico'
@@ -196,12 +212,16 @@ export class ChatWindowComponent {
   }
    
   triggerFileUpload(): void {
+    if (this.contextIsFixed) return;
+    
     if (this.fileInput && this.fileInput.nativeElement) {
       this.fileInput.nativeElement.click();
     }
   }
 
   handleFileInput(event: Event): void {
+    if (this.contextIsFixed) return;
+    
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
@@ -218,6 +238,8 @@ export class ChatWindowComponent {
 
   
   toggleUploadPopup(): void {
+    if (this.contextIsFixed) return;
+    
     this.showUploadPopup = !this.showUploadPopup;
     // Reset search when opening the popup
     if (this.showUploadPopup) {
@@ -225,6 +247,7 @@ export class ChatWindowComponent {
       this.searchResults = [];
     }
   }
+  
   onSendMessage() {
     if (!this.store.selectedWorkspaceId || !this.store.selectedThreadId) return;
     if (!this.userInput.trim()) return;
@@ -238,6 +261,12 @@ export class ChatWindowComponent {
         this.selectedContext.document_number,
         this.selectedContext.sourceIcon
       );
+      
+      // Set contextIsFixed to true to disable context changing controls
+      this.contextIsFixed = true;
+      
+      // Remove the pinned context display since it's now fixed
+      this.selectedContext = null;
     }
 
     this.store.addMessage(
